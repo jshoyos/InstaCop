@@ -16,9 +16,10 @@ class instaCops:
         if (args.usr != None and args.pwd != None):
             self.driver.find_element_by_xpath("//input[@name='username']").click()
             sleep(2)
-            self.username = self.driver.find_element_by_xpath("//input[@name='username']").send_keys(args.usr)
+            self.username = args.usr
+            self.driver.find_element_by_xpath("//input[@name='username']").send_keys(args.usr)
             self.driver.find_element_by_xpath("//input[@name='password']").click()
-            password = driver.find_element_by_xpath("//input[@name='password']").send_keys(args.pwd)
+            password = self.driver.find_element_by_xpath("//input[@name='password']").send_keys(args.pwd)
         if(args.usr == None):
             self.username = input("Enter your username: ")
             self.driver.find_element_by_xpath("//input[@name='username']").send_keys(self.username)
@@ -33,21 +34,46 @@ class instaCops:
     def get_formatted_username(self,username):
         try:
             index = username.index('@')
-            return username[index]
+            return username[:index]
         except:
             return username
 
     def go_to_profile(self):
         formatted_username = self.get_formatted_username(self.username)
         hyperlink = '/' + formatted_username +'/'
-        self.driver.find_element_by_link_text(hyperlink).click()
+        self.driver.find_element_by_xpath("//a[contains(@href, '/{}')]".format(formatted_username)).click()
         sleep(4)
 
-    def find_fake_followers():
-       pass
+    def _get_names(self):
+       #sleep(1)
+       #scroll_box = self.driver.find_element_by_xpath("/html/body/div[4]/div/div[2]")
+       #last_ht ,ht = 0, 1
+       #while last_ht != ht:
+       #    last_ht = ht
+       #    sleep(1)
+       #    ht = self.driver.execute_script("""arguments[0], scrollTo(0,arguments[0].scrollHeight);
+       #                                         return arguments[0].scrollHeight;""", scroll_box)
+       links = self.driver.find_element_by_xpath('/html/body/div[4]/div/div[2]').find_elements_by_tag_name('a')
+       names = [name.text for name in links if name.text != ' ']
+       self.driver.find_element_by_xpath("/html/body/div[4]/div/div[1]/div/div[2]/button").click()
+       return names
+
+    def find_fake_followers(self):
+       self.driver.find_element_by_xpath("//a[contains(@href, 'following')]").click()
+       sleep(2)
+       following = self._get_names()
+       self.driver.find_element_by_xpath("//a[contains(@href, 'followers')]").click()
+       sleep(2)
+       followers = self._get_names()
+       not_following_back = [user for user in following if user not in followers]
+       print(not_following_back)
 
 def main():
     instaCop = instaCops()
     instaCop.go_to_profile()
-
+    instaCop.find_fake_followers()
+#try:
 main()
+#pt:
+#print("Something went wrong please try again")
+#exit()

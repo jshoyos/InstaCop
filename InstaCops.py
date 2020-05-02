@@ -45,14 +45,14 @@ class instaCops:
         sleep(4)
 
     def _get_names(self):
-       #sleep(1)
-       #scroll_box = self.driver.find_element_by_xpath("/html/body/div[4]/div/div[2]")
-       #last_ht ,ht = 0, 1
-       #while last_ht != ht:
-       #    last_ht = ht
-       #    sleep(1)
-       #    ht = self.driver.execute_script("""arguments[0], scrollTo(0,arguments[0].scrollHeight);
-       #                                         return arguments[0].scrollHeight;""", scroll_box)
+       sleep(1)
+       scroll_box = self.driver.find_element_by_xpath("/html/body/div[4]/div/div[2]")
+       last_ht ,ht = 0, 1
+       while last_ht != ht:
+           last_ht = ht
+           sleep(1)
+           ht = self.driver.execute_script("""arguments[0], scrollTo(0,arguments[0].scrollHeight);
+                                                return arguments[0].scrollHeight;""", scroll_box)
        links = self.driver.find_element_by_xpath('/html/body/div[4]/div/div[2]').find_elements_by_tag_name('a')
        names = [name.text for name in links if name.text != ' ']
        self.driver.find_element_by_xpath("/html/body/div[4]/div/div[1]/div/div[2]/button").click()
@@ -72,8 +72,9 @@ def main():
     instaCop = instaCops()
     instaCop.go_to_profile()
     instaCop.find_fake_followers()
-#try:
-main()
-#pt:
-#print("Something went wrong please try again")
-#exit()
+
+try:
+    main()
+except:
+    print("Something went wrong please try again")
+exit()

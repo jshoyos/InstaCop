@@ -2,6 +2,7 @@ from selenium import webdriver as sl
 from time import sleep
 import argparse
 import getpass
+from os import system, name
 
 parser = argparse.ArgumentParser(description='Bot to see users that don\'t follow you back')
 parser.add_argument('--usr', help='username', type=str)
@@ -45,14 +46,19 @@ class instaCops:
         sleep(4)
 
     def _get_names(self):
-       sleep(1)
+       sleep(2)
        scroll_box = self.driver.find_element_by_xpath("/html/body/div[4]/div/div[2]")
        last_ht ,ht = 0, 1
+       progress = 0
        while last_ht != ht:
+           self.clear()
+           self.update_progress_bar(progress)
+           progress += 1
            last_ht = ht
-           sleep(1)
-           ht = self.driver.execute_script("""arguments[0], scrollTo(0,arguments[0].scrollHeight);
+           ht = self.driver.execute_script("""arguments[0].scrollTop=arguments[0].scrollHeight;
                                                 return arguments[0].scrollHeight;""", scroll_box)
+           
+           sleep(2)
        links = self.driver.find_element_by_xpath('/html/body/div[4]/div/div[2]').find_elements_by_tag_name('a')
        names = [name.text for name in links if name.text != ' ']
        self.driver.find_element_by_xpath("/html/body/div[4]/div/div[1]/div/div[2]/button").click()
@@ -67,14 +73,23 @@ class instaCops:
        followers = self._get_names()
        not_following_back = [user for user in following if user not in followers]
        print(not_following_back)
+    
+    def update_progress_bar(self,progress):
+        print ("\r [{0}]".format('#'*(int(progress))))
+
+    def clear(self):
+        if name == 'nt':
+            _ = system('cls')
+        else:
+            _= system('clear')
 
 def main():
     instaCop = instaCops()
     instaCop.go_to_profile()
     instaCop.find_fake_followers()
 
-try:
-    main()
-except:
-    print("Something went wrong please try again")
-exit()
+#try:
+main()
+#except:
+#    print("Something went wrong please try again")
+#exit()
